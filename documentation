@@ -1,0 +1,93 @@
+I obtained three color images. One image exhibits a group of people, 
+a distant shot of a man that is slightly overexposed and has a slightly bluish tint, and a picture of 
+a sitting dog. The objective is to distinguish faces, detect eyes, and perform facial blurring. This 
+
+process was completed using an algorithm known as Haar feature-based cascade classifiers, an 
+
+adaptable tool that can detect objects in images regardless of scale and location in the image. It 
+
+works by using a cascading window to classify whether it has specific Haar-like features. The 
+
+features are rectangular patterns of light and dark areas, which capture edges, lines, and texture 
+
+contrasts.
+
+  Detect human faces in consumer images using pretrained Haar cascades.
+
+Detect human eyes and apply targeted blur for privacy redaction.
+
+Evaluate performance sensitivity to scale, exposure, and color cast, and contrast-normalize where helpful.
+
+Confirm non-human controls are (correctly) not detected as human faces/eyes.
+
+
+  Environment & Dependencies
+
+Python 3.9+
+
+Libraries: opencv-python, numpy (optional: scikit-image for metrics)
+
+Models: Haar cascades (frontal face, eye).
+
+
+  Data Assets
+
+group.jpg: multiple people, used to benchmark multi-face detection and eye detection with blurring.
+
+tourist.jpg: distant subject with mild overexposure and blue tint; used to benchmark robustness at range and to lighting.
+
+dog.jpg: negative control for human-centric detectors (expect spurious detections to be minimal).
+
+
+
+Methodology
+
+Preprocessing
+
+Convert to grayscale.
+
+For challenging lighting, apply histogram equalization to normalize contrast (particularly for the tourist image). 
+
+CSC515_Critical Thinking Module…
+
+Face Detection (Haar)
+
+Use pretrained Frontal Face cascade.
+
+Tune scaleFactor and minNeighbors to trade off recall vs precision per image.
+
+Eye Detection (Haar)
+
+Use the Eye cascade within each detected face ROI; tune scaleFactor (e.g., 2.5–3.5) to stabilize detections at varying scales/distances. 
+
+CSC515_Critical Thinking Module…
+
+Privacy Redaction
+
+For each detected eye or face bounding box, apply Gaussian blur (or pixelation) in-place.
+
+Persist redacted outputs alongside annotated visualizations.
+
+Evaluation
+
+Qualitative review of false positives (FP) and false negatives (FN) across scenarios; document sensitivity to distance and uneven lighting. 
+
+CSC515_Critical Thinking Module…
+
+Results Summary (from the report)
+
+Group Image: Faces detected reliably with minimal FP/FN; eyes more sensitive—tuning to scale factor ≈ 3.5 reduced error but did not fully eliminate it. Blurring of eyes was broadly successful with a small number of misses and spurious hits. 
+
+CSC515_Critical Thinking Module…
+
+Tourist Image: Face detected despite distance/overexposure; eyes required up-scaling (~2.5) and contrast normalization; right eye detected, left eye missed -> partial redaction. 
+
+CSC515_Critical Thinking Module…
+
+Dog Image: As expected, human cascades were not appropriate for the dog; reported false positives illustrate domain limitation. 
+
+CSC515_Critical Thinking Module…
+
+Key Insight: Haar cascades remain fast and effective for frontal, well-lit, human faces, but degrade with distance, exposure issues, and non-frontal/occluded features. Parameter sweeps help, but perfect recall/precision is unlikely without additional methods.
+
+Hardware: CPU-only is sufficient; images are small and classical CV is lightweight.
